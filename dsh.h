@@ -6,8 +6,8 @@
 /**
  * @param line a string to be processed. This string will be destroyed, and the memory will be freed upon execution.
  * @param lineSize the size of line (number of characters)
- * @returns a pointer to an array of strings, with each string being a single word from line 
- * Will stop processing after lineSize-1 characters have been processed (since we assume the last char is "\0"), or a "\0" is read)
+ * @returns a pointer to an array of strings, with each string being a single word from line. It will contain a null pointer in the element after, representing the end of the array
+ * Will overrite the final element of line with '\0', and will also only process up to the first '\0'
 */
 char** getEachWord(char* line, int lineSize);
 
