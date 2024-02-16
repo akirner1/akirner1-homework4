@@ -52,3 +52,7 @@ char** getEachWord(char* line, int lineSize){
     
 
 }
+
+int isCommand(char* cmd, char* expected){
+    return !strcmp(cmd, expected);
+}
