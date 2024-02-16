@@ -25,18 +25,15 @@ int main(int argc, char *argv[]) {
 	// DO NOT REMOVE THE BLOCK ABOVE THIS LINE //
 
 	char *cmdline = (char*) malloc(MAXBUF); // stores user input from commmand line
-	//while(1){
+	while(1){
 		printf("dsh> ");
 		fgets(cmdline, MAXBUF, stdin);
-		getEachWord("hello world", MAXBUF);
-		//for(int i = 0; i < sizeof(*allWords); i++){
-		//	printf("%s", allWords[i]);
-		//}
+		char** allWords = getEachWord(cmdline, MAXBUF);
+		for(int i = 0; allWords[i] != NULL; i++){
+			printf("%s\n", allWords[i]);
+		}
 		
-		
-		
-		
-	//}
+	}
 
 	return 0;
 }
