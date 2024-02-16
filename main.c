@@ -41,7 +41,9 @@ int main(int argc, char *argv[]) {
 		if(cmd == NULL){
 			//do nothing
 		}else if(isCommand(cmd, "exit")){
-			run = 0;
+			free(cmdline);
+			free(workingDir);
+			return 0;
 		}else if(isCommand(cmd, "pwd")){
 			
 			getcwd(workingDir, MAXBUF);
@@ -49,11 +51,10 @@ int main(int argc, char *argv[]) {
 		}else if(isCommand(cmd, "cd")){
 			char* targetDir = allWords[1]; 
 			if(targetDir == NULL){
-				printf("Insufficient arguments for command: cd\n");
-			}else{
-				if(chdir(targetDir) != 0){
+				targetDir = getenv("HOME");
+			}
+			if(chdir(targetDir) != 0){
 					perror("");
-				}
 			}
 
 		}else{
@@ -61,18 +62,21 @@ int main(int argc, char *argv[]) {
 			char* programPath = constructPath(cmd, workingDir);
 			if(programPath == NULL){
 				printf("Error: %s not found!\n", cmd);
-			}
-			//valid path was found, time to execute!
-			if(fork()){
-				//parent
-				wait(NULL);
 			}else{
-				//child
-				execv(programPath, allWords);
+				//valid path was found, time to execute!
+				int isForeground = checkForeground(allWords);
+				if(fork()){
+					//parent
+					if(isForeground){
+						wait(NULL);
+					}
+				}else{
+					//child
+					execv(programPath, allWords);
+				}
 			}
 		}
-		
-
+		free(allWords);
 		
 	}
 	free(cmdline);

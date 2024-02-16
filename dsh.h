@@ -33,3 +33,10 @@ char* constructPath(char* rawPath, char* workingDir);
  * replaces each string beginning in a "$" with the environment variable of the corresponding name
 */
 void decodeEnviromentVars(char** args);
+
+/**
+ * @param args the list of arguments provided to the code
+ * @return 1 if operation should be done in the foreground, and 0 if it should be done in the background
+ * will also remove the & character from the end of the args if it is there
+*/
+int checkForeground(char** args);

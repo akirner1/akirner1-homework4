@@ -103,9 +103,7 @@ char* constructPath(char* rawPath, char* workingDir){
         
     }
     //all paths are invalid
-    free(testPath);
     free(envPath);
-    printf("could not find valid path\n");
     return NULL;
     
 
@@ -118,4 +116,19 @@ void decodeEnviromentVars(char** args){
         }
 
     }
+}
+
+int checkForeground(char** args){
+    //TODO: due to confusion on where exactly the & can and can't be place in order to be detected, this function may be incorrect
+    int i = 0;
+    //we know args[0] is the path name, because if not this wouldn't be executed
+    //since args's final index is a null pointer, args[i+1] won't skip the null pointer.
+    while(args[i+1] != NULL){
+        i++;
+    }
+    if(!strcmp("&", args[i])){
+        args[i] = NULL;
+        return 0;
+    }
+    return 1;
 }
