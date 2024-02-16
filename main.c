@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 			getcwd(workingDir, MAXBUF);
 			char* programPath = constructPath(cmd, workingDir);
 			if(programPath == NULL){
-				printf("Error: %s not found!", cmd);
+				printf("Error: %s not found!\n", cmd);
 			}
 			//valid path was found, time to execute!
 			if(fork()){
