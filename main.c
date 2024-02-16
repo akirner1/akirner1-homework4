@@ -12,11 +12,11 @@
 #include <sys/stat.h>
 #include <string.h>
 #include "dsh.h"
+#include <sys/wait.h>
 
 #define MAX_PROC 250
 
 int main(int argc, char *argv[]) {
-
 	// DO NOT REMOVE THE BLOCK BELOW (FORK BOMB PREVENTION) //
 	struct rlimit limit;
 	limit.rlim_cur = MAX_PROC;
@@ -26,10 +26,12 @@ int main(int argc, char *argv[]) {
 
 	char *cmdline = (char*) malloc(MAXBUF); // stores user input from commmand line
 	int run = 1;
+	char* workingDir = (char*) malloc(MAXBUF);
 	while(run){
 		printf("dsh> ");
 		fgets(cmdline, MAXBUF, stdin);
 		char** allWords = getEachWord(cmdline, MAXBUF);
+		decodeEnviromentVars(allWords);
 		/*for(int i = 0; allWords[i] != NULL; i++){
 			printf("%s\n", allWords[i]);
 		}*/
@@ -41,13 +43,13 @@ int main(int argc, char *argv[]) {
 		}else if(isCommand(cmd, "exit")){
 			run = 0;
 		}else if(isCommand(cmd, "pwd")){
-			char* workingDir = (char*) malloc(MAXBUF);
+			
 			getcwd(workingDir, MAXBUF);
 			printf("%s\n", workingDir);
 		}else if(isCommand(cmd, "cd")){
 			char* targetDir = allWords[1]; 
 			if(targetDir == NULL){
-				printf("Insufficient arguments for command: cd");
+				printf("Insufficient arguments for command: cd\n");
 			}else{
 				if(chdir(targetDir) != 0){
 					perror("");
@@ -55,13 +57,25 @@ int main(int argc, char *argv[]) {
 			}
 
 		}else{
-			//TODO user is attempting to run an external program
-			//handle filepath, handle any invalid path errors that may occur, fork, run program
+			getcwd(workingDir, MAXBUF);
+			char* programPath = constructPath(cmd, workingDir);
+			if(programPath == NULL){
+				printf("Error: %s not found!", cmd);
+			}
+			//valid path was found, time to execute!
+			if(fork()){
+				//parent
+				wait(NULL);
+			}else{
+				//child
+				execv(programPath, allWords);
+			}
 		}
 		
 
 		
 	}
 	free(cmdline);
+	free(workingDir);
 	return 0;
 }

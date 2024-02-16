@@ -56,3 +56,66 @@ char** getEachWord(char* line, int lineSize){
 int isCommand(char* cmd, char* expected){
     return !strcmp(cmd, expected);
 }
+
+
+/**
+ * @param path the path to validate
+ * @returns path if path is valid
+ * @returns NULL if path is invalid
+*/
+char* validatePath(char* path){
+    if (access(path, F_OK | X_OK) == 0) {
+            return path;
+        }else{
+            return NULL;
+        }
+}
+
+
+
+char* constructPath(char* rawPath, char* workingDir){
+    if(rawPath[0] == '/'){
+        //path is already constructed. Check if valid and then return
+        char* goodPath = (char*) malloc(strlen(rawPath) + 1);
+        return validatePath(goodPath);
+    }
+    char* wdCatPath = (char*) malloc(strlen(workingDir) + 1 + strlen(rawPath) + 1);
+    sprintf(wdCatPath, "%s/%s", workingDir, rawPath);
+    if (validatePath(wdCatPath) != NULL){
+        //the raw path exists in the current working directory
+        return wdCatPath;
+    }
+    free(wdCatPath);
+    char* envPath = (char*) malloc(strlen(getenv("PATH")) + 1);
+    strcpy(envPath, getenv("PATH"));
+    char* constructedPath = strtok(envPath, ":");
+    char* testPath;
+    
+    while(constructedPath != NULL){
+        testPath = (char*) malloc(strlen(constructedPath) + 1 + strlen(rawPath) + 1);
+        sprintf(testPath, "%s/%s", constructedPath, rawPath);
+        if(validatePath(testPath) != NULL){
+            free(envPath);
+            return testPath;
+        }
+        free(testPath);
+        constructedPath = strtok(NULL, ":");
+        
+    }
+    //all paths are invalid
+    free(testPath);
+    free(envPath);
+    printf("could not find valid path\n");
+    return NULL;
+    
+
+}
+
+void decodeEnviromentVars(char** args){
+    for(int i = 0; args[i] != NULL; i++){
+        if(args[i][0] == '$'){
+            args[i] = getenv(&args[i][1]);
+        }
+
+    }
+}

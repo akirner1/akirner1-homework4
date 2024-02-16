@@ -18,3 +18,18 @@ char** getEachWord(char* line, int lineSize);
  * @returns true if cmd is as expected, false if it's not
 */
 int isCommand(char* cmd, char* expected);
+
+/**
+ * @param rawPath either an full path beginning with '/', or unconstructed path, not beginning with '/'. rawPath will be destroyed and freed during execution
+ * @param workingDir the path of the current working directory
+ * @returns a pointer to a string containing the exact path, ready to be executed.
+ * @returns NULL if the path is invalid
+*/
+char* constructPath(char* rawPath, char* workingDir);
+
+
+/**
+ * @param args the array of arguments given by the user, terminating with a null pointer
+ * replaces each string beginning in a "$" with the environment variable of the corresponding name
+*/
+void decodeEnviromentVars(char** args);
