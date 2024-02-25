@@ -77,6 +77,7 @@ char* constructPath(char* rawPath, char* workingDir){
     if(rawPath[0] == '/'){
         //path is already constructed. Check if valid and then return
         char* goodPath = (char*) malloc(strlen(rawPath) + 1);
+        strcpy(goodPath, rawPath);
         return validatePath(goodPath);
     }
     char* wdCatPath = (char*) malloc(strlen(workingDir) + 1 + strlen(rawPath) + 1);
